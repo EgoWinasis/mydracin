@@ -11,6 +11,7 @@ import {
   FaRandom,
   FaInfoCircle,
   FaPhone,
+  FaSearch,
 } from "react-icons/fa";
 
 export default function LeftSidebar() {
@@ -23,6 +24,7 @@ export default function LeftSidebar() {
     { name: "For You", icon: FaStar, href: "/foryou" },
     { name: "Dub Indo", icon: FaCrown, href: "/dubindo" },
     { name: "Random", icon: FaRandom, href: "/random" },
+     { name: "Search", icon: FaSearch, href: "/search" },
     { name: "About", icon: FaInfoCircle, href: "/about" },
     { name: "Contact", icon: FaPhone, href: "/contact" },
   ];
