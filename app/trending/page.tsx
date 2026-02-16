@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import Skeleton from "@/components/Skeleton";
 import axios from "axios";
 import { FaFire } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 interface Drama {
   bookId: string;
@@ -30,7 +31,7 @@ const PopularSearch: React.FC = () => {
   }, []);
 
   return (
-    <div className="dark:bg-[#0f0f0f] min-h-screen p-6">
+    <div className="bg-[#0f0f0f] min-h-screen p-6">
       <h2 className="flex items-center gap-2 text-lg lg:text-xl font-semibold mb-6 text-white">
         <FaFire className="text-red-500" />
         Trending Movies
@@ -50,8 +51,14 @@ const PopularSearch: React.FC = () => {
 const Card: React.FC<{ item: Drama }> = ({ item }) => {
   const [imgLoading, setImgLoading] = useState(true);
 
+   const router = useRouter(); // <-- init router
+  
+    const handleClick = () => {
+      router.push(`/detail?bookId=${item.bookId}`); // <-- navigasi ke halaman detail
+    };
+
   return (
-    <div className="group bg-[#1a1a1a] rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden">
+    <div  onClick={handleClick} className="group bg-[#1a1a1a] rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden">
 
       {/* Image */}
       <div className="relative w-full aspect-[2/3] overflow-hidden">

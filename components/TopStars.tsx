@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import Skeleton from "./Skeleton";
 import axios from "axios";
 import { FaFire } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 interface Drama {
   bookId: string;
@@ -52,8 +53,17 @@ export default function PopularSearch() {
 function Card({ item }: { item: Drama }) {
   const [imgLoading, setImgLoading] = useState(true);
 
+   const router = useRouter(); // <-- init router
+
+  const handleClick = () => {
+    router.push(`/detail?bookId=${item.bookId}`); // <-- navigasi ke halaman detail
+  };
+
+
   return (
-    <div className="group bg-white dark:bg-[#1c1c1c] rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden">
+    <div 
+      onClick={handleClick}
+    className="group bg-white dark:bg-[#1c1c1c] rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden">
 
       {/* Image */}
       <div className="relative w-full aspect-[2/3] overflow-hidden">
