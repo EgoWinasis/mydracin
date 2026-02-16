@@ -25,7 +25,7 @@ export default function RootLayout({
         </div>
 
         {/* MOBILE */}
-        <div className="lg:hidden relative">
+        <div className="lg:hidden relative w-full min-h-screen">
           {/* Hamburger */}
           <button
             className="fixed top-4 left-4 z-50 p-3 rounded-md bg-gray-800 text-white shadow-lg"
@@ -36,7 +36,10 @@ export default function RootLayout({
 
           {/* Sidebar Overlay */}
           {isSidebarOpen && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={() => setIsSidebarOpen(false)} />
+            <div
+              className="fixed inset-0 bg-black bg-opacity-50 z-40"
+              onClick={() => setIsSidebarOpen(false)}
+            />
           )}
 
           {/* Sidebar Mobile */}
@@ -49,7 +52,9 @@ export default function RootLayout({
           </div>
 
           {/* Main Content */}
-          <main className="px-5 py-6">{children}</main>
+          <main className="w-full h-screen overflow-y-auto">
+            {children}
+          </main>
         </div>
       </body>
     </html>
