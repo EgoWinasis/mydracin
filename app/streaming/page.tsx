@@ -1,11 +1,13 @@
-"use client"; // PENTING: supaya halaman ini murni Client Component
+// app/streaming/page.tsx
+import StreamingPage from "./StreamingPageComponent";
+import { Suspense } from "react";
 
-import StreamingPageComponent from "./StreamingPageComponent";
-
-export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic"; // wajib supaya CSR
 
 export default function StreamingPageWrapper() {
   return (
-    <StreamingPageComponent />
+    <Suspense fallback={<p className="text-white p-6">Loading...</p>}>
+      <StreamingPage />
+    </Suspense>
   );
 }
