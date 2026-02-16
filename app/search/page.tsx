@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
 import Skeleton from "@/components/Skeleton";
 import Link from "next/link";
@@ -21,9 +21,10 @@ export default function SearchPage() {
   const [error, setError] = useState<string | null>(null);
 
   const search = async () => {
-    if (!query.trim()) {
+    const trimmedQuery = query.trim();
+    if (trimmedQuery.length < 2) {
       setResults([]);
-      setError(null);
+      setError("Type at least 2 characters to search.");
       return;
     }
 
@@ -33,14 +34,11 @@ export default function SearchPage() {
     try {
       const res = await axios.get(
         `https://dramabox.sansekai.my.id/api/dramabox/search?query=${encodeURIComponent(
-          query
+          trimmedQuery
         )}`
       );
 
-      if (!res.data || !Array.isArray(res.data)) {
-        setResults([]);
-        setError("No valid data received from API.");
-      } else if (res.data.length === 0) {
+      if (!res.data || !Array.isArray(res.data) || res.data.length === 0) {
         setResults([]);
         setError("No results found.");
       } else {
@@ -57,11 +55,6 @@ export default function SearchPage() {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    // Optional: auto search with default query
-    // search();
-  }, []);
 
   return (
     <div className="bg-[#0f0f0f] min-h-screen p-6 text-white max-w-5xl mx-auto">
@@ -86,9 +79,7 @@ export default function SearchPage() {
       </div>
 
       {/* Error Message */}
-      {error && (
-        <p className="text-red-500 mb-4 font-medium">{error}</p>
-      )}
+      {error && <p className="text-red-500 mb-4 font-medium">{error}</p>}
 
       {/* Results */}
       {loading ? (
@@ -128,8 +119,6 @@ export default function SearchPage() {
             </li>
           ))}
         </ul>
-      ) : !error && query.trim() !== "" ? (
-        <p>No results found.</p>
       ) : null}
     </div>
   );
