@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Skeleton from "@/components/Skeleton";
 import Link from "next/link";
-import Image from "next/image"; // <-- import next/image
+import Image from "next/image";
 
 interface SearchResult {
   bookId: string;
@@ -18,25 +18,49 @@ export default function SearchPage() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const search = () => {
-    if (!query) return;
+  const search = async () => {
+    if (!query.trim()) {
+      setResults([]);
+      setError(null);
+      return;
+    }
+
     setLoading(true);
-    axios
-      .get(
+    setError(null);
+
+    try {
+      const res = await axios.get(
         `https://dramabox.sansekai.my.id/api/dramabox/search?query=${encodeURIComponent(
           query
         )}`
-      )
-      .then((res) => {
-        setResults(res.data || []);
-      })
-      .catch(() => setResults([]))
-      .finally(() => setLoading(false));
+      );
+
+      if (!res.data || !Array.isArray(res.data)) {
+        setResults([]);
+        setError("No valid data received from API.");
+      } else if (res.data.length === 0) {
+        setResults([]);
+        setError("No results found.");
+      } else {
+        setResults(res.data);
+      }
+    } catch (err: any) {
+      console.error(err);
+      setResults([]);
+      setError(
+        err.response?.data?.message ||
+          "Something went wrong while fetching search results."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    search();
+    // Optional: auto search with default query
+    // search();
   }, []);
 
   return (
@@ -51,6 +75,7 @@ export default function SearchPage() {
           onChange={(e) => setQuery(e.target.value)}
           className="flex-1 bg-gray-800 text-white p-2 rounded"
           placeholder="Search..."
+          onKeyDown={(e) => e.key === "Enter" && search()}
         />
         <button
           onClick={search}
@@ -60,12 +85,15 @@ export default function SearchPage() {
         </button>
       </div>
 
+      {/* Error Message */}
+      {error && (
+        <p className="text-red-500 mb-4 font-medium">{error}</p>
+      )}
+
       {/* Results */}
       {loading ? (
         <Skeleton className="h-96 w-full rounded-lg" />
-      ) : results.length === 0 ? (
-        <p>No results found.</p>
-      ) : (
+      ) : results.length > 0 ? (
         <ul className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {results.map((book) => (
             <li
@@ -73,7 +101,6 @@ export default function SearchPage() {
               className="bg-gray-800 p-3 rounded hover:bg-red-600 transition"
             >
               <Link href={`/detail?bookId=${book.bookId}`}>
-                {/* Gunakan next/image */}
                 <div className="relative w-full h-48 mb-2">
                   <Image
                     src={book.cover}
@@ -101,7 +128,9 @@ export default function SearchPage() {
             </li>
           ))}
         </ul>
-      )}
+      ) : !error && query.trim() !== "" ? (
+        <p>No results found.</p>
+      ) : null}
     </div>
   );
 }

@@ -114,10 +114,16 @@ export default function ContactPage() {
           href="https://saweria.co/egowinasis"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center gap-3 bg-yellow-400 hover:bg-yellow-500 transition rounded-xl p-4 shadow-md"
+          className="relative flex items-center justify-center gap-4 bg-gradient-to-r from-yellow-400 via-yellow-500 to-orange-400
+                     p-5 rounded-2xl shadow-xl transform transition-all duration-300 hover:scale-105 hover:shadow-2xl"
         >
-          <FaCoffee className="text-2xl text-brown-800" />
-          <span className="font-semibold text-black text-lg">Support me on Saweria</span>
+          <FaCoffee className="text-4xl text-white animate-pulse" />
+          <div className="text-left">
+            <p className="text-lg font-bold text-white drop-shadow-md">
+              Support me on Saweria
+            </p>
+            
+          </div>
         </a>
 
       </div>
