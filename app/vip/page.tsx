@@ -23,17 +23,17 @@ const PopularSearch: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get<Drama[]>("https://dramabox.sansekai.my.id/api/dramabox/populersearch")
+      .get<Drama[]>("https://dramabox.sansekai.my.id/api/dramabox/vip")
       .then((res) => setData(res.data))
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, []);
 
   return (
-    <div className="dark:bg-[#0f0f0f] min-h-screen p-6">
+    <div className="bg-black min-h-screen p-6">
       <h2 className="flex items-center gap-2 text-lg lg:text-xl font-semibold mb-6 text-white">
         <FaFire className="text-red-500" />
-        Trending Movies
+        Latest Movies
       </h2>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-6">
@@ -51,7 +51,7 @@ const Card: React.FC<{ item: Drama }> = ({ item }) => {
   const [imgLoading, setImgLoading] = useState(true);
 
   return (
-    <div className="group bg-[#1a1a1a] rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden">
+    <div className="group bg-[#0f0f0f] rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden">
 
       {/* Image */}
       <div className="relative w-full aspect-[2/3] overflow-hidden">

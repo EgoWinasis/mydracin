@@ -9,7 +9,7 @@ import { FaFire } from "react-icons/fa";
 interface Drama {
   bookId: string;
   bookName: string;
-  coverWap: string;
+  bookCover: string;
   chapterCount: number;
   tags: string[];
   rankVo: {
@@ -23,17 +23,17 @@ const PopularSearch: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get<Drama[]>("https://dramabox.sansekai.my.id/api/dramabox/populersearch")
+      .get<Drama[]>("https://dramabox.sansekai.my.id/api/dramabox/randomdrama")
       .then((res) => setData(res.data))
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, []);
 
   return (
-    <div className="dark:bg-[#0f0f0f] min-h-screen p-6">
+    <div className="bg-[#0f0f0f] min-h-screen p-6">
       <h2 className="flex items-center gap-2 text-lg lg:text-xl font-semibold mb-6 text-white">
         <FaFire className="text-red-500" />
-        Trending Movies
+        Random Movies
       </h2>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-6">
@@ -57,9 +57,9 @@ const Card: React.FC<{ item: Drama }> = ({ item }) => {
       <div className="relative w-full aspect-[2/3] overflow-hidden">
         {imgLoading && <Skeleton className="absolute inset-0" />}
 
-        {item.coverWap ? (
+        {item.bookCover ? (
           <Image
-            src={item.coverWap}
+            src={item.bookCover}
             alt={item.bookName || "Drama Cover"}
             fill
             loading="lazy"

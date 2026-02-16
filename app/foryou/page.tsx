@@ -23,17 +23,17 @@ const PopularSearch: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get<Drama[]>("https://dramabox.sansekai.my.id/api/dramabox/populersearch")
+      .get<Drama[]>("https://dramabox.sansekai.my.id/api/dramabox/foryou")
       .then((res) => setData(res.data))
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, []);
 
   return (
-    <div className="dark:bg-[#0f0f0f] min-h-screen p-6">
+    <div className="bg-[#0f0f0f] min-h-screen p-6">
       <h2 className="flex items-center gap-2 text-lg lg:text-xl font-semibold mb-6 text-white">
         <FaFire className="text-red-500" />
-        Trending Movies
+       For You
       </h2>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-6">

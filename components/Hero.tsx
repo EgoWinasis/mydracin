@@ -3,6 +3,7 @@
 import axios from "axios";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Skeleton from "./Skeleton";
 
 interface Movie {
@@ -19,8 +20,9 @@ export default function Hero() {
   const [data, setData] = useState<Movie[]>([]);
   const [current, setCurrent] = useState(0);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
-  // Fetch API
+  // Fetch trending
   useEffect(() => {
     axios
       .get("https://dramabox.sansekai.my.id/api/dramabox/trending")
@@ -31,14 +33,12 @@ export default function Hero() {
       .catch((err) => console.log(err));
   }, []);
 
-  // Auto Slide
+  // Auto slide
   useEffect(() => {
     if (!data.length) return;
-
     const interval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % data.length);
     }, 5000);
-
     return () => clearInterval(interval);
   }, [data]);
 
@@ -50,24 +50,26 @@ export default function Hero() {
 
   const movie = data[current];
 
+  // Redirect ke satu halaman detail dengan query string
+  const goToDetail = (bookId: string) => {
+    router.push(`/detail?bookId=${bookId}`);
+  };
+
   return (
     <div className="relative w-full h-[260px] sm:h-[320px] lg:h-[480px] rounded-3xl overflow-hidden mb-10">
-
       <Image
         src={movie.coverWap}
         alt={movie.bookName}
         fill
         sizes="100vw"
         priority
-        className="object-cover transition-all duration-700"
+        className="object-cover transition-all duration-700 cursor-pointer"
+        onClick={() => goToDetail(movie.bookId)}
       />
 
-      {/* Gradient */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
 
-      {/* Content */}
       <div className="absolute bottom-0 left-0 p-6 sm:p-8 lg:p-12 text-white max-w-2xl">
-
         <h1 className="text-2xl sm:text-3xl lg:text-5xl font-bold leading-tight">
           {movie.bookName}
         </h1>
@@ -77,7 +79,10 @@ export default function Hero() {
         </p>
 
         <div className="flex items-center gap-4 mt-6">
-          <button className="bg-red-600 hover:bg-red-700 transition px-6 py-2 rounded-lg text-sm lg:text-base font-medium">
+          <button
+            className="bg-red-600 hover:bg-red-700 transition px-6 py-2 rounded-lg text-sm lg:text-base font-medium"
+            onClick={() => goToDetail(movie.bookId)}
+          >
             Watch
           </button>
 
@@ -87,21 +92,17 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Indicator */}
       <div className="absolute bottom-6 right-6 flex gap-2">
         {data.map((_, index) => (
           <div
             key={index}
             onClick={() => setCurrent(index)}
             className={`h-2 rounded-full cursor-pointer transition-all ${
-              current === index
-                ? "w-6 bg-red-600"
-                : "w-2 bg-white/50"
+              current === index ? "w-6 bg-red-600" : "w-2 bg-white/50"
             }`}
           />
         ))}
       </div>
-
     </div>
   );
 }
