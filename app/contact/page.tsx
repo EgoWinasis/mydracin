@@ -8,7 +8,8 @@ import {
   FaGithub,
   FaLinkedin,
   FaTiktok,
-  FaFacebook
+  FaFacebook,
+  FaCoffee
 } from "react-icons/fa";
 
 export default function ContactPage() {
@@ -36,7 +37,6 @@ export default function ContactPage() {
 
         {/* KONTAK */}
         <div className="space-y-4 text-sm text-gray-600 dark:text-gray-300">
-
           <div className="flex items-center justify-center gap-2">
             <FaEnvelope className="text-red-600" />
             <span>egowinasis@gmail.com</span>
@@ -51,7 +51,6 @@ export default function ContactPage() {
             <FaMapMarkerAlt className="text-red-600" />
             <span>Indonesia</span>
           </div>
-
         </div>
 
         {/* CONNECT WITH ME */}
@@ -60,7 +59,7 @@ export default function ContactPage() {
             CONNECT WITH ME
           </h2>
 
-          <div className="flex justify-center gap-6 text-xl">
+          <div className="flex flex-wrap justify-center gap-6 text-xl">
 
             <a
               href="https://instagram.com/egowinasis"
@@ -109,6 +108,17 @@ export default function ContactPage() {
 
           </div>
         </div>
+
+        {/* SAWERIA CARD */}
+        <a
+          href="https://saweria.co/egowinasis"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-3 bg-yellow-400 hover:bg-yellow-500 transition rounded-xl p-4 shadow-md"
+        >
+          <FaCoffee className="text-2xl text-brown-800" />
+          <span className="font-semibold text-black text-lg">Support me on Saweria</span>
+        </a>
 
       </div>
 
