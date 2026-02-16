@@ -22,7 +22,7 @@ export default function SearchPage() {
 
   const search = async () => {
     const trimmedQuery = query.trim();
-    if (trimmedQuery.length < 2) {
+    if (trimmedQuery.length < 3) {
       setResults([]);
       setError("Type at least 2 characters to search.");
       return;
