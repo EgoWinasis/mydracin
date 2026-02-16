@@ -1,7 +1,7 @@
-"use client";
+"use client"; // penting, supaya halaman ini murni Client Component
 
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Skeleton from "@/components/Skeleton";
 
@@ -27,7 +27,18 @@ interface Episode {
   chapterIndex: number;
 }
 
-export default function DetailPage() {
+// Paksa halaman hanya CSR, tidak ada SSG/SSR
+export const dynamic = "force-dynamic";
+
+export default function DetailPageWrapper() {
+  return (
+    <Suspense fallback={<p className="text-white p-6">Loading...</p>}>
+      <DetailPage />
+    </Suspense>
+  );
+}
+
+function DetailPage() {
   const searchParams = useSearchParams();
   const bookId = searchParams.get("bookId");
 
@@ -36,9 +47,9 @@ export default function DetailPage() {
   const [loadingDetail, setLoadingDetail] = useState(true);
   const [loadingEpisodes, setLoadingEpisodes] = useState(true);
 
-  // Fetch detail buku
   useEffect(() => {
     if (!bookId) return;
+
     setLoadingDetail(true);
     axios
       .get(`https://dramabox.sansekai.my.id/api/dramabox/detail?bookId=${bookId}`)
@@ -49,20 +60,22 @@ export default function DetailPage() {
       .catch(() => setLoadingDetail(false));
   }, [bookId]);
 
-  // Fetch semua episode
   useEffect(() => {
     if (!bookId) return;
+
     setLoadingEpisodes(true);
     axios
       .get(`https://dramabox.sansekai.my.id/api/dramabox/allepisode?bookId=${bookId}`)
       .then((res) => {
-        setEpisodes(res.data); // res.data sesuai JSON: chapterId, chapterName, chapterIndex
+        setEpisodes(res.data);
         setLoadingEpisodes(false);
       })
       .catch(() => setLoadingEpisodes(false));
   }, [bookId]);
 
-  if (loadingDetail) {
+  if (!bookId) return <p className="text-white p-6">Book ID not provided</p>;
+
+  if (loadingDetail)
     return (
       <div className="bg-[#0f0f0f] min-h-screen p-6 text-white">
         <Skeleton className="h-96 w-full rounded-lg mb-4" />
@@ -72,15 +85,11 @@ export default function DetailPage() {
         <Skeleton className="h-4 w-5/6" />
       </div>
     );
-  }
 
-  if (!detail) {
+  if (!detail)
     return (
-      <p className="bg-[#0f0f0f] min-h-screen p-6 text-white">
-        Data not found
-      </p>
+      <p className="bg-[#0f0f0f] min-h-screen p-6 text-white">Data not found</p>
     );
-  }
 
   return (
     <div className="bg-[#0f0f0f] min-h-screen p-6 text-white max-w-5xl mx-auto">
@@ -106,9 +115,7 @@ export default function DetailPage() {
             ))}
           </div>
 
-          <p className="mt-4 text-gray-400">
-            Total Episode: {detail.chapterCount}
-          </p>
+          <p className="mt-4 text-gray-400">Total Episode: {detail.chapterCount}</p>
         </div>
       </div>
 
