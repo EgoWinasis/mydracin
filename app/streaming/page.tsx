@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Skeleton from "@/components/Skeleton";
 import axios from "axios";
 
@@ -13,7 +13,11 @@ interface Video {
 interface Episode {
   chapterId: string;
   chapterName: string;
-  videoList: Video[];
+  cdnList: {
+    cdnDomain: string;
+    isDefault: number;
+    videoPathList: Video[];
+  }[];
 }
 
 interface Movie {
@@ -32,35 +36,50 @@ export default function StreamingPage() {
   const [currentVideo, setCurrentVideo] = useState<Video | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const episodeListRef = useRef<HTMLUListElement>(null);
+
+  // Ambil semua episode dari bookId
   useEffect(() => {
     if (!bookId) return;
 
     setLoading(true);
-    // Ambil semua episode berdasarkan bookId
     axios
       .get(`https://dramabox.sansekai.my.id/api/dramabox/allepisode?bookId=${bookId}`)
       .then((res) => {
-        const episodes = res.data;
-        const idx = episodes.findIndex((ep: Episode) => ep.chapterId === chapterId);
-        setMovie({ bookId, bookName: res.data.bookName || "Movie", episodes });
+        const episodes: Episode[] = res.data;
+        const idx = episodes.findIndex((ep) => ep.chapterId === chapterId);
+        setMovie({ bookId, bookName: "Movie", episodes });
         setCurrentEpisodeIndex(idx >= 0 ? idx : 0);
       })
       .catch(() => setMovie(null))
       .finally(() => setLoading(false));
   }, [bookId, chapterId]);
 
-  // Set current video resolusi default (terendah) saat episode berubah
+  // Set video default (resolusi terendah) saat episode berubah
   useEffect(() => {
     if (!movie) return;
     const ep = movie.episodes[currentEpisodeIndex];
-    if (ep) {
-      const lowestRes = [...ep.videoList].sort((a, b) => a.quality - b.quality)[0];
-      setCurrentVideo(lowestRes);
-    }
+    if (ep && ep.cdnList.length > 0) {
+      // Ambil CDN default pertama saja
+      const defaultCdn = ep.cdnList.find((cdn) => cdn.isDefault === 1) || ep.cdnList[0];
+      if (defaultCdn.videoPathList.length > 0) {
+        // Ambil resolusi terendah sebagai default
+        const lowestRes = [...defaultCdn.videoPathList].sort((a, b) => a.quality - b.quality)[0];
+        setCurrentVideo(lowestRes);
+      } else setCurrentVideo(null);
+    } else setCurrentVideo(null);
   }, [movie, currentEpisodeIndex]);
+
+  // Auto scroll episode list
+  useEffect(() => {
+    if (!episodeListRef.current) return;
+    const list = episodeListRef.current.children[currentEpisodeIndex] as HTMLElement;
+    list?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [currentEpisodeIndex]);
 
   if (!bookId || !chapterId)
     return <p className="text-white p-6">Book ID or Chapter ID not provided</p>;
+
   if (loading)
     return (
       <div className="bg-[#0f0f0f] min-h-screen p-6 text-white">
@@ -69,6 +88,7 @@ export default function StreamingPage() {
         <Skeleton className="h-4 w-full mb-1" />
       </div>
     );
+
   if (!movie) return <p className="text-white p-6">Movie not found</p>;
 
   const currentEpisode = movie.episodes[currentEpisodeIndex];
@@ -85,73 +105,75 @@ export default function StreamingPage() {
     }
   };
 
+  // Ambil video dari CDN default untuk resolusi dropdown
+  const videoList: Video[] =
+    currentEpisode?.cdnList.find((cdn) => cdn.isDefault === 1)?.videoPathList || [];
+
   return (
     <div className="bg-[#0f0f0f] min-h-screen p-6 text-white max-w-5xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">{movie.bookName}</h1>
 
-      {/* Video Player */}
-      {currentVideo && (
+      {currentVideo ? (
         <video
-          key={currentVideo.videoPath} // reload video saat ganti resolusi atau episode
+          key={currentVideo.videoPath}
           src={currentVideo.videoPath}
           controls
           autoPlay
           className="w-full rounded-lg shadow-lg mb-4"
+        />
+      ) : (
+        <p className="mb-4">Video tidak tersedia untuk episode ini.</p>
+      )}
+
+      {/* Resolusi & Navigasi */}
+      <div className="flex items-center gap-4 mb-6">
+        {videoList.length > 0 && (
+          <>
+            <span>Resolution:</span>
+            <select
+              className="bg-gray-800 text-white p-1 rounded"
+              value={currentVideo?.quality}
+              onChange={(e) => {
+                const q = parseInt(e.target.value);
+                const newVideo = videoList.find((v) => v.quality === q);
+                if (newVideo) setCurrentVideo(newVideo);
+              }}
+            >
+              {videoList
+                .sort((a, b) => b.quality - a.quality)
+                .map((v) => (
+                  <option key={v.quality} value={v.quality}>
+                    {v.quality}p
+                  </option>
+                ))}
+            </select>
+          </>
+        )}
+
+        <button
+          onClick={goPrevEpisode}
+          disabled={currentEpisodeIndex === 0}
+          className="bg-gray-800 hover:bg-red-600 p-2 rounded disabled:opacity-50"
         >
-          Your browser does not support the video tag.
-        </video>
-      )}
-
-      {/* Resolusi Dropdown */}
-      {currentEpisode && (
-        <div className="flex items-center gap-4 mb-6">
-          <span>Resolution:</span>
-          <select
-            className="bg-gray-800 text-white p-1 rounded"
-            value={currentVideo?.quality}
-            onChange={(e) => {
-              const q = parseInt(e.target.value);
-              const newVideo = currentEpisode.videoList.find((v) => v.quality === q);
-              if (newVideo) setCurrentVideo(newVideo);
-            }}
-          >
-            {currentEpisode.videoList
-              .sort((a, b) => b.quality - a.quality)
-              .map((v) => (
-                <option key={v.quality} value={v.quality}>
-                  {v.quality}p
-                </option>
-              ))}
-          </select>
-
-          {/* Navigasi Episode */}
-          <button
-            onClick={goPrevEpisode}
-            disabled={currentEpisodeIndex === 0}
-            className="bg-gray-800 hover:bg-red-600 p-2 rounded disabled:opacity-50"
-          >
-            Prev
-          </button>
-          <button
-            onClick={goNextEpisode}
-            disabled={currentEpisodeIndex === movie.episodes.length - 1}
-            className="bg-gray-800 hover:bg-red-600 p-2 rounded disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
-      )}
+          Prev
+        </button>
+        <button
+          onClick={goNextEpisode}
+          disabled={currentEpisodeIndex === movie.episodes.length - 1}
+          className="bg-gray-800 hover:bg-red-600 p-2 rounded disabled:opacity-50"
+        >
+          Next
+        </button>
+      </div>
 
       {/* Episode List */}
       <h2 className="text-xl font-semibold mb-4">All Episodes</h2>
-      <ul className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <ul ref={episodeListRef} className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {movie.episodes.map((ep, idx) => (
           <li
             key={ep.chapterId}
             className={`p-3 rounded cursor-pointer transition ${
-              idx === currentEpisodeIndex
-                ? "bg-red-600"
-                : "bg-gray-800 hover:bg-red-600"
+              idx === currentEpisodeIndex ? "bg-red-600" : "bg-gray-800 hover:bg-red-600"
             }`}
             onClick={() => setCurrentEpisodeIndex(idx)}
           >
