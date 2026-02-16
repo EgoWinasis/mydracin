@@ -44,7 +44,7 @@ export default function RootLayout({
 
           {/* Sidebar Mobile */}
           <div
-            className={`fixed top-0 left-0 h-full w-64 bg-[#141414] z-50 transform transition-transform duration-300 ${
+            className={`fixed top-0 left-0 h-full  bg-[#141414] z-50 transform transition-transform duration-300 ${
               isSidebarOpen ? "translate-x-0" : "-translate-x-full"
             }`}
           >
@@ -52,7 +52,7 @@ export default function RootLayout({
           </div>
 
           {/* Main Content */}
-          <main className="w-full h-screen overflow-y-auto">
+          <main className={`overflow-y-auto h-screen`}>
             {children}
           </main>
         </div>
