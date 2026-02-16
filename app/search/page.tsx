@@ -15,7 +15,7 @@ interface SearchResult {
 }
 
 export default function SearchPage() {
-  const [query, setQuery] = useState("pewaris");
+  const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -66,7 +66,7 @@ export default function SearchPage() {
       ) : results.length === 0 ? (
         <p>No results found.</p>
       ) : (
-        <ul className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <ul className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {results.map((book) => (
             <li
               key={book.bookId}
