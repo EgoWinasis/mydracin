@@ -1,4 +1,4 @@
-"use client"; // penting, supaya halaman ini murni Client Component
+"use client";
 
 import axios from "axios";
 import { useEffect, useState, Suspense } from "react";
@@ -27,7 +27,6 @@ interface Episode {
   chapterIndex: number;
 }
 
-// Paksa halaman hanya CSR, tidak ada SSG/SSR
 export const dynamic = "force-dynamic";
 
 export default function DetailPageWrapper() {
@@ -130,6 +129,10 @@ function DetailPage() {
               <li
                 key={ep.chapterId}
                 className="bg-gray-800 hover:bg-red-600 transition p-3 rounded cursor-pointer"
+                onClick={() =>
+                  // Kirim bookId + chapterId ke halaman streaming
+                  window.location.href = `/streaming?bookId=${bookId}&chapterId=${ep.chapterId}`
+                }
               >
                 <p className="font-medium">
                   {ep.chapterName || `Episode ${ep.chapterIndex + 1}`}
