@@ -6,7 +6,7 @@ import Image from "next/image";
 import Skeleton from "@/components/Skeleton";
 import axios from "axios";
 import { FaFire } from "react-icons/fa";
-
+import { useRouter } from "next/navigation";
 
 interface Drama {
   bookId: string;
@@ -58,7 +58,7 @@ const PopularSearch: React.FC = () => {
   }, [page]);
 
   return (
-    <div className="bg-black min-h-screen p-6">
+    <div className="bg-[#0f0f0f] min-h-screen p-6">
       <h2 className="flex items-center gap-2 text-lg lg:text-xl font-semibold mb-6 text-white">
         <FaFire className="text-red-500" />
         Dub Indo
@@ -92,8 +92,15 @@ const Card = React.forwardRef<HTMLDivElement, { item: Drama }>(
   ({ item }, ref) => {
     const [imgLoading, setImgLoading] = useState(true);
 
+  const router = useRouter(); 
+    
+      const handleClick = () => {
+        router.push(`/detail?bookId=${item.bookId}`);
+      };
+    
+
     return (
-      <div
+      <div onClick={handleClick}
         ref={ref}
         className="group bg-[#0f0f0f] rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
       >
