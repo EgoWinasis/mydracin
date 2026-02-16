@@ -35,11 +35,7 @@ export default function RightSidebar({ mobile = false }) {
         bg-white dark:bg-[#141414] p-6 lg:p-8
       `}
     >
-      {/* Search */}
-      <input
-        placeholder="Search ..."
-        className="w-full px-4 py-2 rounded-full bg-gray-100 dark:bg-[#1c1c1c] outline-none mb-8 dark:text-white"
-      />
+     
 
       <h3 className="font-semibold mb-6 dark:text-white">
         Trending Movies

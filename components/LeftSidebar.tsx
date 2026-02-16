@@ -10,7 +10,7 @@ import {
   FaCrown,
   FaRandom,
   FaInfoCircle,
-  FaPhone
+  FaPhone,
 } from "react-icons/fa";
 
 export default function LeftSidebar() {
@@ -21,7 +21,7 @@ export default function LeftSidebar() {
     { name: "Trending", icon: FaFire, href: "/trending" },
     { name: "Latest", icon: FaClock, href: "/latest" },
     { name: "For You", icon: FaStar, href: "/foryou" },
-    { name: "VIP", icon: FaCrown, href: "/vip" },
+    { name: "Dub Indo", icon: FaCrown, href: "/dubindo" },
     { name: "Random", icon: FaRandom, href: "/random" },
     { name: "About", icon: FaInfoCircle, href: "/about" },
     { name: "Contact", icon: FaPhone, href: "/contact" },
@@ -31,7 +31,11 @@ export default function LeftSidebar() {
     <aside className="w-52 bg-[#141414] p-6 shadow-[6px_0_20px_-5px_rgba(0,0,0,0.3)] min-h-screen">
 
       <h1 className="text-xl font-bold mb-10 text-white">
-        <span className="text-red-500">◉</span> MyDracin<span className="text-red-500">.</span>
+        <img 
+    src="/logo.png"      // ganti dengan path logo-mu
+    alt="Logo"
+    className="inline-block w-5 ml-1" // sesuaikan ukuran dan jarak
+  /> MyDracin<span className="text-red-500">.</span>
       </h1>
 
       <nav className="space-y-6">
