@@ -37,7 +37,7 @@ export default function RightSidebar({ mobile = false }) {
     >
      
 
-      <h3 className="font-semibold mb-6 dark:text-white">
+      <h3 className="font-semibold mb-6 text-white">
         Trending Movies
       </h3>
 
@@ -85,7 +85,7 @@ function MovieItem({ item }: { item: TrendingItem }) {
       </div>
 
       <div>
-        <p className="font-semibold dark:text-white text-sm line-clamp-2 group-hover:text-red-500 transition">
+        <p className="font-semibold text-white text-sm line-clamp-2 group-hover:text-red-500 transition">
           {item.bookName}
         </p>
         <p className="text-xs text-gray-500 line-clamp-1">

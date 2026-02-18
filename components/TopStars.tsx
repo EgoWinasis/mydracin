@@ -32,7 +32,7 @@ export default function PopularSearch() {
 
   return (
     <div>
-      <h2 className="flex items-center gap-2 text-lg lg:text-xl font-semibold mb-6 dark:text-white">
+      <h2 className="flex items-center gap-2 text-lg lg:text-xl font-semibold mb-6 text-white">
         <FaFire className="text-red-500" />
         Popular Search
       </h2>
@@ -90,7 +90,7 @@ function Card({ item }: { item: Drama }) {
 
       {/* Content */}
       <div className="p-3 space-y-2">
-        <h3 className="text-sm font-semibold dark:text-white line-clamp-2">
+        <h3 className="text-sm font-semibold text-white line-clamp-2">
           {item.bookName}
         </h3>
 
