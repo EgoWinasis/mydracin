@@ -123,7 +123,7 @@ const Card = React.forwardRef<HTMLDivElement, { item: Drama }>(
       <div
         onClick={handleClick}
         ref={ref}
-        className="group bg-[#0f0f0f] rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer"
+        className="group bg-[#1a1a1a] rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer"
       >
         <div className="relative w-full aspect-[2/3] overflow-hidden">
           {imgLoading && <Skeleton className="absolute inset-0" />}

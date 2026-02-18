@@ -131,7 +131,7 @@ function DetailPage() {
     );
 
   return (
-    <div className="bg-[#0f0f0f] min-h-screen p-6 text-white max-w-5xl mx-auto">
+    <div className="bg-[#0f0f0f] min-h-screen p-6 text-white w-full mx-auto">
       {/* Header */}
       <div className="flex flex-col md:flex-row gap-6">
         <img

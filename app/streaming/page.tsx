@@ -160,7 +160,7 @@ function StreamingPage() {
   };
 
   return (
-    <div className="bg-[#0f0f0f] min-h-screen p-6 text-white max-w-5xl mx-auto">
+    <div className="bg-[#0f0f0f] min-h-screen p-6 text-white w-full mx-auto">
       {toast && (
         <div className="fixed top-5 right-5 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in">
           {toast}

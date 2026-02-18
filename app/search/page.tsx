@@ -123,7 +123,7 @@ export default function SearchPage() {
                   {book.tagNames.map((tag, i) => (
                     <span
                       key={i}
-                      className="text-xs bg-red-600 px-2 py-1 rounded"
+                      className="text-xs bg-gray-700 px-2 py-1 rounded"
                     >
                       {tag}
                     </span>

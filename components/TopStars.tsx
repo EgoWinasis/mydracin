@@ -90,7 +90,7 @@ function Card({ item }: { item: Drama }) {
   return (
     <div
       onClick={handleClick}
-      className="group bg-white dark:bg-[#1c1c1c] rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
+      className="group  bg-[#1c1c1c] rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
     >
       {/* Image */}
       <div className="relative w-full aspect-[2/3] overflow-hidden">
@@ -128,7 +128,7 @@ function Card({ item }: { item: Drama }) {
           {item.tags?.slice(0, 2).map((tag, i) => (
             <span
               key={i}
-              className="text-[10px] bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded-full text-gray-700 dark:text-gray-200"
+              className="text-[10px]  bg-gray-700 px-2 py-0.5 rounded-full  text-gray-200"
             >
               {tag}
             </span>
