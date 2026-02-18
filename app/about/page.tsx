@@ -20,7 +20,7 @@ export default function AboutPage() {
       {/* INFO CARDS */}
       <div className="grid md:grid-cols-2 gap-8 mb-20">
 
-        <div className="bg-white dark:bg-[#1c1c1c] p-6 rounded-2xl shadow-md hover:shadow-xl transition">
+        <div className="bg-[#0f0f0f] p-6 rounded-2xl shadow-md hover:shadow-xl transition">
           <FaFilm className="text-red-600 text-2xl mb-4" />
           <h3 className="font-semibold dark:text-white mb-2">
             Tentang Platform
@@ -31,7 +31,7 @@ export default function AboutPage() {
           </p>
         </div>
 
-        <div className="bg-white dark:bg-[#1c1c1c] p-6 rounded-2xl shadow-md hover:shadow-xl transition">
+        <div className="bg-[#0f0f0f] p-6 rounded-2xl shadow-md hover:shadow-xl transition">
           <FaHeart className="text-red-600 text-2xl mb-4" />
           <h3 className="font-semibold dark:text-white mb-2">
             Dibuat untuk Pembelajaran
@@ -45,7 +45,7 @@ export default function AboutPage() {
       </div>
 
       {/* DISCLAIMER */}
-      <div className="max-w-4xl mx-auto bg-white dark:bg-[#1c1c1c] p-8 rounded-2xl shadow-md">
+      <div className="max-w-4xl mx-auto bg-[#0f0f0f] p-8 rounded-2xl shadow-md">
         <h2 className="text-xl font-semibold dark:text-white mb-6">
           Disclaimer
         </h2>
