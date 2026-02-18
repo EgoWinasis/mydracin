@@ -27,16 +27,16 @@ export default function ContactPage() {
 
         {/* NAMA */}
         <div>
-          <h1 className="text-2xl font-bold dark:text-white">
+          <h1 className="text-2xl font-bold text-white">
             Ego Winasis
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 text-sm">
+          <p className="text-gray-500 text-gray-400 text-sm">
             Fullstack Web Developer
           </p>
         </div>
 
         {/* KONTAK */}
-        <div className="space-y-4 text-sm text-gray-600 dark:text-gray-300">
+        <div className="space-y-4 text-sm text-gray-600 text-gray-300">
           <div className="flex items-center justify-center gap-2">
             <FaEnvelope className="text-red-600" />
             <span>egowinasis@gmail.com</span>
@@ -55,7 +55,7 @@ export default function ContactPage() {
 
         {/* CONNECT WITH ME */}
         <div>
-          <h2 className="text-sm font-semibold tracking-wide text-gray-500 dark:text-gray-400 mb-4">
+          <h2 className="text-sm font-semibold tracking-wide text-gray-500 text-gray-400 mb-4">
             CONNECT WITH ME
           </h2>
 
