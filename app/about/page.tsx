@@ -4,7 +4,7 @@ import { FaFilm, FaHeart } from "react-icons/fa";
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen px-6 lg:px-16 py-12 bg-gray-50 dark:bg-[#0f0f0f]">
+    <div className="min-h-screen px-6 lg:px-16 py-12 bg-gray-50 bg-[#0f0f0f]">
 
       {/* HERO */}
       <div className="text-center max-w-3xl mx-auto mb-16">
@@ -20,7 +20,7 @@ export default function AboutPage() {
       {/* INFO CARDS */}
       <div className="grid md:grid-cols-2 gap-8 mb-20">
 
-        <div className="bg-[#0f0f0f] p-6 rounded-2xl shadow-md hover:shadow-xl transition">
+        <div className="bg-[#1c1c1c] p-6 rounded-2xl shadow-md hover:shadow-xl transition">
           <FaFilm className="text-red-600 text-2xl mb-4" />
           <h3 className="font-semibold dark:text-white mb-2">
             Tentang Platform
@@ -31,7 +31,7 @@ export default function AboutPage() {
           </p>
         </div>
 
-        <div className="bg-[#0f0f0f] p-6 rounded-2xl shadow-md hover:shadow-xl transition">
+        <div className="bg-[#1c1c1c] p-6 rounded-2xl shadow-md hover:shadow-xl transition">
           <FaHeart className="text-red-600 text-2xl mb-4" />
           <h3 className="font-semibold dark:text-white mb-2">
             Dibuat untuk Pembelajaran
@@ -45,7 +45,7 @@ export default function AboutPage() {
       </div>
 
       {/* DISCLAIMER */}
-      <div className="max-w-4xl mx-auto bg-[#0f0f0f] p-8 rounded-2xl shadow-md">
+      <div className="max-w-4xl mx-auto bg-[#1c1c1c] p-8 rounded-2xl shadow-md">
         <h2 className="text-xl font-semibold dark:text-white mb-6">
           Disclaimer
         </h2>

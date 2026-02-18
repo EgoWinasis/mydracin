@@ -14,9 +14,9 @@ import {
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 bg-gray-50 dark:bg-[#0f0f0f]">
+    <div className="min-h-screen flex items-center justify-center px-6 bg-gray-50 bg-[#0f0f0f]">
 
-      <div className="w-full max-w-md bg-[#0f0f0f] p-10 rounded-2xl shadow-lg text-center space-y-8">
+      <div className="w-full max-w-md bg-[#1c1c1c] p-10 rounded-2xl shadow-lg text-center space-y-8">
 
         {/* FOTO */}
         <img
