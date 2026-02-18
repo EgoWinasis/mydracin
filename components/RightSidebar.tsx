@@ -32,7 +32,7 @@ export default function RightSidebar({ mobile = false }) {
     <aside
       className={`
         ${mobile ? "" : "w-70 min-h-screen shadow-[-6px_0_20px_-5px_rgba(0,0,0,0.15)]"}
-        bg-white dark:bg-[#141414] p-6 lg:p-8
+        bg-[#141414] p-6 lg:p-8
       `}
     >
      

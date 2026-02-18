@@ -6,7 +6,7 @@ import RightSidebar from "@/components/RightSidebar";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#f5f5f7] dark:bg-[#0f0f0f] px-5 py-6 lg:px-8 lg:py-8">
+    <main className="min-h-screen bg-[#0f0f0f] px-5 py-6 lg:px-8 lg:py-8">
       {/* Hero Section */}
       <Hero />
 

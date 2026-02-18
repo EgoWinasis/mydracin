@@ -57,7 +57,7 @@ export default function SearchPage() {
   };
 
   return (
-    <div className="bg-[#0f0f0f] min-h-screen p-6 text-white max-w-5xl mx-auto">
+    <div className="bg-[#0f0f0f] min-h-screen p-6 text-white w-full mx-auto">
       <h1 className="text-2xl font-bold mb-6">Search</h1>
 
       {/* Search Input */}
