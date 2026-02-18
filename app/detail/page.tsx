@@ -4,6 +4,7 @@ import axios from "axios";
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Skeleton from "@/components/Skeleton";
+import toast from "react-hot-toast";
 
 interface Tag {
   tagId: number;
@@ -45,35 +46,72 @@ function DetailPage() {
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [loadingDetail, setLoadingDetail] = useState(true);
   const [loadingEpisodes, setLoadingEpisodes] = useState(true);
+  const [errorShown, setErrorShown] = useState(false);
 
+  // ================= DETAIL =================
   useEffect(() => {
     if (!bookId) return;
 
-    setLoadingDetail(true);
-    axios
-      .get(`https://dramabox.sansekai.my.id/api/dramabox/detail?bookId=${bookId}`)
-      .then((res) => {
+    const fetchDetail = async () => {
+      try {
+        const res = await axios.get(
+          `https://dramabox.sansekai.my.id/api/dramabox/detail?bookId=${bookId}`,
+          { timeout: 10000 } // ✅ timeout 10 detik
+        );
+
         setDetail(res.data);
-        setLoadingDetail(false);
-      })
-      .catch(() => setLoadingDetail(false));
+        setLoadingDetail(false); // ✅ hanya hilang kalau sukses
+      } catch (err) {
+        console.error(err);
+
+        if (!errorShown) {
+          toast.error(
+            "Server sedang bermasalah atau terlalu lama merespon."
+          );
+          setErrorShown(true);
+        }
+
+        // ❌ loadingDetail tidak dimatikan → skeleton tetap tampil
+      }
+    };
+
+    fetchDetail();
   }, [bookId]);
 
+  // ================= EPISODES =================
   useEffect(() => {
     if (!bookId) return;
 
-    setLoadingEpisodes(true);
-    axios
-      .get(`https://dramabox.sansekai.my.id/api/dramabox/allepisode?bookId=${bookId}`)
-      .then((res) => {
+    const fetchEpisodes = async () => {
+      try {
+        const res = await axios.get(
+          `https://dramabox.sansekai.my.id/api/dramabox/allepisode?bookId=${bookId}`,
+          { timeout: 10000 }
+        );
+
         setEpisodes(res.data);
-        setLoadingEpisodes(false);
-      })
-      .catch(() => setLoadingEpisodes(false));
+        setLoadingEpisodes(false); // ✅ hanya hilang kalau sukses
+      } catch (err) {
+        console.error(err);
+
+        if (!errorShown) {
+          toast.error(
+            "Server sedang bermasalah atau terlalu lama merespon."
+          );
+          setErrorShown(true);
+        }
+
+        // ❌ loadingEpisodes tidak dimatikan
+      }
+    };
+
+    fetchEpisodes();
   }, [bookId]);
 
-  if (!bookId) return <p className="text-white p-6">Book ID not provided</p>;
+  if (!bookId)
+    return <p className="text-white p-6">Book ID not provided</p>;
 
+  // ================= DETAIL SKELETON =================
   if (loadingDetail)
     return (
       <div className="bg-[#0f0f0f] min-h-screen p-6 text-white">
@@ -87,18 +125,21 @@ function DetailPage() {
 
   if (!detail)
     return (
-      <p className="bg-[#0f0f0f] min-h-screen p-6 text-white">Data not found</p>
+      <p className="bg-[#0f0f0f] min-h-screen p-6 text-white">
+        Data not found
+      </p>
     );
 
   return (
     <div className="bg-[#0f0f0f] min-h-screen p-6 text-white max-w-5xl mx-auto">
-      {/* Header Buku */}
+      {/* Header */}
       <div className="flex flex-col md:flex-row gap-6">
         <img
           src={detail.coverWap}
           alt={detail.bookName}
           className="w-full md:w-64 rounded-lg shadow-lg"
         />
+
         <div className="flex-1">
           <h1 className="text-3xl font-bold">{detail.bookName}</h1>
           <p className="mt-2 text-gray-300">{detail.introduction}</p>
@@ -114,13 +155,16 @@ function DetailPage() {
             ))}
           </div>
 
-          <p className="mt-4 text-gray-400">Total Episode: {detail.chapterCount}</p>
+          <p className="mt-4 text-gray-400">
+            Total Episode: {detail.chapterCount}
+          </p>
         </div>
       </div>
 
       {/* Episode List */}
       <div className="mt-8">
         <h2 className="text-2xl font-semibold mb-4">Episodes</h2>
+
         {loadingEpisodes ? (
           <Skeleton className="h-96 w-full rounded-lg" />
         ) : (
@@ -130,8 +174,7 @@ function DetailPage() {
                 key={ep.chapterId}
                 className="bg-gray-800 hover:bg-red-600 transition p-3 rounded cursor-pointer"
                 onClick={() =>
-                  // Kirim bookId + chapterId ke halaman streaming
-                  window.location.href = `/streaming?bookId=${bookId}&chapterId=${ep.chapterId}`
+                  (window.location.href = `/streaming?bookId=${bookId}&chapterId=${ep.chapterId}`)
                 }
               >
                 <p className="font-medium">

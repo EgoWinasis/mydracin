@@ -14,7 +14,7 @@ import {
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 bg-gray-50 bg-[#0f0f0f]">
+    <div className="min-h-screen flex items-center w-full justify-center px-6  bg-[#0f0f0f]">
 
       <div className="w-full max-w-md bg-[#1c1c1c] p-10 rounded-2xl shadow-lg text-center space-y-8">
 
@@ -30,13 +30,13 @@ export default function ContactPage() {
           <h1 className="text-2xl font-bold text-white">
             Ego Winasis
           </h1>
-          <p className="text-gray-500 text-gray-400 text-sm">
+          <p className="text-gray-400 text-sm">
             Fullstack Web Developer
           </p>
         </div>
 
         {/* KONTAK */}
-        <div className="space-y-4 text-sm text-gray-600 text-gray-300">
+        <div className="space-y-4 text-sm  text-gray-300">
           <div className="flex items-center justify-center gap-2">
             <FaEnvelope className="text-red-600" />
             <span>egowinasis@gmail.com</span>

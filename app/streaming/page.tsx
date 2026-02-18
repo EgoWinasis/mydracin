@@ -1,8 +1,7 @@
-// /app/streaming/page.tsx
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useRef } from "react";
 import axios from "axios";
 import Skeleton from "@/components/Skeleton";
 
@@ -47,52 +46,106 @@ function StreamingPage() {
   const [currentVideo, setCurrentVideo] = useState<Video | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Ambil semua episode
+  const [toast, setToast] = useState<string | null>(null);
+  const toastShown = useRef(false);
+
+  // =========================
+  // FETCH DATA
+  // =========================
   useEffect(() => {
     if (!bookId) return;
-    setLoading(true);
+
     axios
-      .get(`https://dramabox.sansekai.my.id/api/dramabox/allepisode?bookId=${bookId}`)
+      .get(
+        `https://dramabox.sansekai.my.id/api/dramabox/allepisode?bookId=${bookId}`
+      )
       .then((res) => {
         const episodes: Episode[] = res.data;
-        const idx = episodes.findIndex((ep) => ep.chapterId === chapterId);
-        setMovie({ bookId, bookName: "Movie", episodes });
+
+        if (!episodes || episodes.length === 0) {
+          throw new Error("Data episode kosong");
+        }
+
+        const idx = episodes.findIndex(
+          (ep) => ep.chapterId === chapterId
+        );
+
+        setMovie({
+          bookId,
+          bookName: "Movie",
+          episodes,
+        });
+
         setCurrentEpisodeIndex(idx >= 0 ? idx : 0);
+        setLoading(false); // ✅ skeleton hilang hanya jika sukses
       })
-      .catch(() => setMovie(null))
-      .finally(() => setLoading(false));
+      .catch(() => {
+        // ❌ error → skeleton tetap muncul
+        if (!toastShown.current) {
+          toastShown.current = true;
+          setToast("Gagal memuat data streaming. Silakan coba lagi.");
+
+          setTimeout(() => {
+            setToast(null);
+            toastShown.current = false;
+          }, 10000); // ✅ 10 detik
+        }
+      });
   }, [bookId, chapterId]);
 
-  // Set video default
+  // =========================
+  // SET DEFAULT VIDEO
+  // =========================
   useEffect(() => {
     if (!movie) return;
+
     const ep = movie.episodes[currentEpisodeIndex];
-    if (!ep || ep.cdnList.length === 0) return setCurrentVideo(null);
+    if (!ep || ep.cdnList.length === 0) return;
 
-    const defaultCdn = ep.cdnList.find((cdn) => cdn.isDefault === 1) || ep.cdnList[0];
+    const defaultCdn =
+      ep.cdnList.find((cdn) => cdn.isDefault === 1) || ep.cdnList[0];
+
     const videoList = defaultCdn.videoPathList;
-    if (!videoList || videoList.length === 0) return setCurrentVideo(null);
+    if (!videoList || videoList.length === 0) return;
 
-    const lowestRes = [...videoList].sort((a, b) => a.quality - b.quality)[0];
+    const lowestRes = [...videoList].sort(
+      (a, b) => a.quality - b.quality
+    )[0];
+
     setCurrentVideo(lowestRes);
   }, [movie, currentEpisodeIndex]);
 
   if (!bookId || !chapterId)
-    return <p className="text-white p-6">Book ID or Chapter ID not provided</p>;
+    return (
+      <p className="text-white p-6">
+        Book ID atau Chapter ID tidak ditemukan
+      </p>
+    );
 
-  if (loading)
+  // =========================
+  // SKELETON (TETAP MUNCUL SAAT ERROR)
+  // =========================
+  if (loading) {
     return (
       <div className="bg-[#0f0f0f] min-h-screen p-6 text-white">
+        {toast && (
+          <div className="fixed top-5 right-5 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in">
+            {toast}
+          </div>
+        )}
+
         <Skeleton className="h-96 w-full rounded-lg mb-4" />
         <Skeleton className="h-6 w-3/4 mb-2" />
       </div>
     );
+  }
 
-  if (!movie) return <p className="text-white p-6">Movie not found</p>;
+  if (!movie) return null;
 
   const currentEpisode = movie.episodes[currentEpisodeIndex];
   const videoList =
-    currentEpisode?.cdnList.find((cdn) => cdn.isDefault === 1)?.videoPathList || [];
+    currentEpisode?.cdnList.find((cdn) => cdn.isDefault === 1)
+      ?.videoPathList || [];
 
   const goNextEpisode = () => {
     if (currentEpisodeIndex < movie.episodes.length - 1) {
@@ -108,9 +161,15 @@ function StreamingPage() {
 
   return (
     <div className="bg-[#0f0f0f] min-h-screen p-6 text-white max-w-5xl mx-auto">
+      {toast && (
+        <div className="fixed top-5 right-5 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in">
+          {toast}
+        </div>
+      )}
+
       <h1 className="text-2xl font-bold mb-4">{movie.bookName}</h1>
 
-      {/* Video Player */}
+      {/* VIDEO PLAYER */}
       {currentVideo ? (
         <video
           key={currentVideo.videoPath}
@@ -123,10 +182,11 @@ function StreamingPage() {
         <p className="mb-4">Video tidak tersedia untuk episode ini.</p>
       )}
 
-      {/* Resolusi & Navigasi Episode */}
+      {/* RESOLUTION & NAV */}
       {videoList.length > 0 && (
         <div className="flex items-center gap-4 mb-6">
           <span>Resolution:</span>
+
           <select
             className="bg-gray-800 text-white p-1 rounded"
             value={currentVideo?.quality}
@@ -136,7 +196,7 @@ function StreamingPage() {
               if (newVideo) setCurrentVideo(newVideo);
             }}
           >
-            {videoList
+            {[...videoList]
               .sort((a, b) => b.quality - a.quality)
               .map((v) => (
                 <option key={v.quality} value={v.quality}>
@@ -152,9 +212,12 @@ function StreamingPage() {
           >
             Prev
           </button>
+
           <button
             onClick={goNextEpisode}
-            disabled={currentEpisodeIndex === movie.episodes.length - 1}
+            disabled={
+              currentEpisodeIndex === movie.episodes.length - 1
+            }
             className="bg-gray-800 hover:bg-red-600 p-2 rounded disabled:opacity-50"
           >
             Next
@@ -162,7 +225,7 @@ function StreamingPage() {
         </div>
       )}
 
-      {/* List Episode */}
+      {/* EPISODE LIST */}
       <h2 className="text-xl font-semibold mb-4">All Episodes</h2>
       <ul className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {movie.episodes.map((ep, idx) => (

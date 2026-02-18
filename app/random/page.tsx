@@ -6,6 +6,7 @@ import Skeleton from "@/components/Skeleton";
 import axios from "axios";
 import { FaFire } from "react-icons/fa";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 interface Drama {
   bookId: string;
@@ -21,13 +22,38 @@ interface Drama {
 const PopularSearch: React.FC = () => {
   const [data, setData] = useState<Drama[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errorShown, setErrorShown] = useState(false);
 
   useEffect(() => {
-    axios
-      .get<Drama[]>("https://dramabox.sansekai.my.id/api/dramabox/randomdrama")
-      .then((res) => setData(res.data))
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
+    const fetchData = async () => {
+      try {
+        const res = await axios.get<Drama[]>(
+          "https://dramabox.sansekai.my.id/api/dramabox/randomdrama",
+          {
+            timeout: 10000, // ✅ timeout 10 detik
+          }
+        );
+
+        setData(res.data);
+
+        // ✅ Skeleton hilang hanya kalau sukses
+        setLoading(false);
+      } catch (err) {
+        console.error(err);
+
+        // ✅ Tidak spam toast
+        if (!errorShown) {
+          toast.error(
+            "Server sedang bermasalah atau terlalu lama merespon."
+          );
+          setErrorShown(true);
+        }
+
+        // ❌ loading tidak dimatikan → skeleton tetap tampil
+      }
+    };
+
+    fetchData();
   }, []);
 
   return (
@@ -42,7 +68,9 @@ const PopularSearch: React.FC = () => {
           ? Array.from({ length: 10 }).map((_, i) => (
               <Skeleton key={i} className="h-[260px] rounded-2xl" />
             ))
-          : data.map((item) => <Card key={item.bookId} item={item} />)}
+          : data.map((item) => (
+              <Card key={item.bookId} item={item} />
+            ))}
       </div>
     </div>
   );
@@ -50,14 +78,17 @@ const PopularSearch: React.FC = () => {
 
 const Card: React.FC<{ item: Drama }> = ({ item }) => {
   const [imgLoading, setImgLoading] = useState(true);
-const router = useRouter(); // <-- init router
-  
-    const handleClick = () => {
-      router.push(`/detail?bookId=${item.bookId}`); // <-- navigasi ke halaman detail
-    };
-  return (
-    <div  onClick={handleClick} className="group bg-[#1a1a1a] rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden">
+  const router = useRouter();
 
+  const handleClick = () => {
+    router.push(`/detail?bookId=${item.bookId}`);
+  };
+
+  return (
+    <div
+      onClick={handleClick}
+      className="group bg-[#1a1a1a] rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer"
+    >
       {/* Image */}
       <div className="relative w-full aspect-[2/3] overflow-hidden">
         {imgLoading && <Skeleton className="absolute inset-0" />}
@@ -93,7 +124,9 @@ const router = useRouter(); // <-- init router
           {item.bookName}
         </h3>
 
-        <p className="text-xs text-gray-400">{item.chapterCount} Episodes</p>
+        <p className="text-xs text-gray-400">
+          {item.chapterCount} Episodes
+        </p>
 
         {/* Tags */}
         <div className="flex flex-wrap gap-1">

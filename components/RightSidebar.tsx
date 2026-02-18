@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import axios from "axios";
 import Skeleton from "./Skeleton";
-import { useRouter } from "next/navigation"; // Next.js 13+ App Router
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 interface TrendingItem {
   bookId: string;
@@ -16,27 +17,53 @@ interface TrendingItem {
 export default function RightSidebar({ mobile = false }) {
   const [data, setData] = useState<TrendingItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter(); // Router untuk navigasi
+  const router = useRouter();
 
   useEffect(() => {
-    axios
-      .get("https://dramabox.sansekai.my.id/api/dramabox/trending")
-      .then((res) => setData(res.data))
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
+    const fetchTrending = async () => {
+      try {
+        const res = await axios.get(
+          "https://dramabox.sansekai.my.id/api/dramabox/trending",
+          {
+            timeout: 10000, // auto timeout 10 detik
+          }
+        );
+
+        if (res.data && res.data.length > 0) {
+          setData(res.data);
+          setLoading(false);
+        } else {
+          throw new Error("Data kosong");
+        }
+      } catch (err) {
+        console.error(err);
+
+        // Toast tidak akan duplikat
+        toast.error("Server sedang bermasalah atau terlalu lama merespon.", {
+          id: "trending-error",
+        });
+
+        // ❗ jangan setLoading(false)
+        // biarkan skeleton tetap muncul
+      }
+    };
+
+    fetchTrending();
   }, []);
 
-  const displayedData = data.slice(0, 3); // Sidebar tetap 3 item
+  const displayedData = data.slice(0, 3);
 
   return (
     <aside
       className={`
-        ${mobile ? "" : "w-70 min-h-screen shadow-[-6px_0_20px_-5px_rgba(0,0,0,0.15)]"}
+        ${
+          mobile
+            ? ""
+            : "w-70 min-h-screen shadow-[-6px_0_20px_-5px_rgba(0,0,0,0.15)]"
+        }
         bg-[#141414] p-6 lg:p-8
       `}
     >
-     
-
       <h3 className="font-semibold mb-6 text-white">
         Trending Movies
       </h3>
@@ -51,10 +78,9 @@ export default function RightSidebar({ mobile = false }) {
             ))}
       </div>
 
-      {/* See More Button */}
       {!loading && data.length > 3 && (
         <button
-          onClick={() => router.push("/trending")} // Klik langsung ke halaman trending
+          onClick={() => router.push("/trending")}
           className="mt-8 w-full bg-red-600 hover:bg-red-700 transition text-white py-2 rounded-lg text-sm"
         >
           See More
@@ -68,9 +94,11 @@ function MovieItem({ item }: { item: TrendingItem }) {
   const [imgLoading, setImgLoading] = useState(true);
 
   return (
-    <div className="flex gap-4 group">
+    <div className="flex gap-4 group cursor-pointer">
       <div className="relative w-14 h-20 rounded-lg overflow-hidden flex-shrink-0">
-        {imgLoading && <Skeleton className="absolute inset-0 rounded-lg" />}
+        {imgLoading && (
+          <Skeleton className="absolute inset-0 rounded-lg" />
+        )}
 
         <Image
           src={item.coverWap}

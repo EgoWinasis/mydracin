@@ -5,6 +5,7 @@ import axios from "axios";
 import Skeleton from "@/components/Skeleton";
 import Link from "next/link";
 import Image from "next/image";
+import toast from "react-hot-toast";
 
 interface SearchResult {
   bookId: string;
@@ -19,12 +20,14 @@ export default function SearchPage() {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errorShown, setErrorShown] = useState(false);
 
   const search = async () => {
     const trimmedQuery = query.trim();
+
     if (trimmedQuery.length < 3) {
       setResults([]);
-      setError("Type at least 2 characters to search.");
+      setError("Type at least 3 characters to search.");
       return;
     }
 
@@ -35,7 +38,10 @@ export default function SearchPage() {
       const res = await axios.get(
         `https://dramabox.sansekai.my.id/api/dramabox/search?query=${encodeURIComponent(
           trimmedQuery
-        )}`
+        )}`,
+        {
+          timeout: 10000, // ✅ timeout 10 detik
+        }
       );
 
       if (!res.data || !Array.isArray(res.data) || res.data.length === 0) {
@@ -44,15 +50,22 @@ export default function SearchPage() {
       } else {
         setResults(res.data);
       }
-    } catch (err: any) {
-      console.error(err);
-      setResults([]);
-      setError(
-        err.response?.data?.message ||
-          "Something went wrong while fetching search results."
-      );
-    } finally {
+
+      // ✅ Skeleton hilang hanya kalau sukses
       setLoading(false);
+
+    } catch (err) {
+      console.error(err);
+
+      // ❗ Toast hanya muncul 1x
+      if (!errorShown) {
+        toast.error(
+          "Server sedang bermasalah atau terlalu lama merespon."
+        );
+        setErrorShown(true);
+      }
+
+      // ❌ loading tidak dimatikan → skeleton tetap tampil
     }
   };
 
@@ -78,7 +91,7 @@ export default function SearchPage() {
         </button>
       </div>
 
-      {/* Error Message */}
+      {/* Error Validasi */}
       {error && <p className="text-red-500 mb-4 font-medium">{error}</p>}
 
       {/* Results */}
@@ -105,6 +118,7 @@ export default function SearchPage() {
                 <p className="text-gray-400 text-sm line-clamp-3">
                   {book.introduction}
                 </p>
+
                 <div className="mt-1 flex flex-wrap gap-1">
                   {book.tagNames.map((tag, i) => (
                     <span

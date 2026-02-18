@@ -1,12 +1,12 @@
 "use client";
 
-
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Skeleton from "@/components/Skeleton";
 import axios from "axios";
 import { FaFire } from "react-icons/fa";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 interface Drama {
   bookId: string;
@@ -24,37 +24,60 @@ const PopularSearch: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [errorShown, setErrorShown] = useState(false);
 
   const observer = useRef<IntersectionObserver | null>(null);
+
   const lastCardRef = useCallback(
     (node: HTMLDivElement) => {
       if (loading) return;
       if (observer.current) observer.current.disconnect();
+
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasMore) {
           setPage((prev) => prev + 1);
         }
       });
+
       if (node) observer.current.observe(node);
     },
     [loading, hasMore]
   );
 
   useEffect(() => {
-    setLoading(true);
-    axios
-      .get<Drama[]>(
-        `https://dramabox.sansekai.my.id/api/dramabox/dubindo?classify=terbaru&page=${page}`
-      )
-      .then((res) => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get<Drama[]>(
+          `https://dramabox.sansekai.my.id/api/dramabox/dubindo?classify=terbaru&page=${page}`,
+          {
+            timeout: 10000, // ✅ timeout 10 detik
+          }
+        );
+
         if (res.data.length === 0) {
           setHasMore(false);
         } else {
           setData((prev) => [...prev, ...res.data]);
         }
-      })
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
+
+        // ✅ Skeleton hilang hanya jika sukses
+        setLoading(false);
+      } catch (err) {
+        console.error(err);
+
+        // ✅ Toast hanya muncul 1x
+        if (!errorShown) {
+          toast.error(
+            "Server sedang bermasalah atau terlalu lama merespon."
+          );
+          setErrorShown(true);
+        }
+
+        // ❌ loading tidak dimatikan → skeleton tetap tampil
+      }
+    };
+
+    fetchData();
   }, [page]);
 
   return (
@@ -67,11 +90,9 @@ const PopularSearch: React.FC = () => {
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-6">
         {data.map((item, index) => {
           if (index === data.length - 1) {
-            // Ref untuk deteksi scroll ke bawah
             return <Card ref={lastCardRef} key={item.bookId} item={item} />;
-          } else {
-            return <Card key={item.bookId} item={item} />;
           }
+          return <Card key={item.bookId} item={item} />;
         })}
 
         {loading &&
@@ -87,22 +108,22 @@ const PopularSearch: React.FC = () => {
   );
 };
 
-// Forward ref agar bisa pakai lastCardRef
+// ================= CARD =================
+
 const Card = React.forwardRef<HTMLDivElement, { item: Drama }>(
   ({ item }, ref) => {
     const [imgLoading, setImgLoading] = useState(true);
+    const router = useRouter();
 
-  const router = useRouter(); 
-    
-      const handleClick = () => {
-        router.push(`/detail?bookId=${item.bookId}`);
-      };
-    
+    const handleClick = () => {
+      router.push(`/detail?bookId=${item.bookId}`);
+    };
 
     return (
-      <div onClick={handleClick}
+      <div
+        onClick={handleClick}
         ref={ref}
-        className="group bg-[#0f0f0f] rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
+        className="group bg-[#0f0f0f] rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer"
       >
         <div className="relative w-full aspect-[2/3] overflow-hidden">
           {imgLoading && <Skeleton className="absolute inset-0" />}
@@ -136,7 +157,9 @@ const Card = React.forwardRef<HTMLDivElement, { item: Drama }>(
             {item.bookName}
           </h3>
 
-          <p className="text-xs text-gray-400">{item.chapterCount} Episodes</p>
+          <p className="text-xs text-gray-400">
+            {item.chapterCount} Episodes
+          </p>
 
           <div className="flex flex-wrap gap-1">
             {item.tags?.slice(0, 2).map((tag, i) => (
